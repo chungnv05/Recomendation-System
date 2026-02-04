@@ -11,6 +11,8 @@ def main():
     res = popular_model.top_popular(df)
 
     print(res)
+    res.to_csv('data/raw/example.csv')
+    
 
 
 
