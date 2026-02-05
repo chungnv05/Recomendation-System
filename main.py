@@ -12,7 +12,7 @@ def main():
 
     print(res)
     res.to_csv('data/raw/example.csv')
-    print("dm chung")
+    
 
 
 

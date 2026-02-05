@@ -1,29 +1,56 @@
 import pandas as pd 
 import numpy as np
 from src.data_loader import data_load
+from collections import Counter
+import math
 
 
-def TfVectorizer(df: pd.DataFrame) -> list:
-    word_set = set()
+
+def TfVectorizer(df: pd.DataFrame) -> list: # tính vector tf cho từng phim
     raw_genres = df['genres'].to_list()
-    for movie_genre in raw_genres:
-        for genre in movie_genre:
-            word_set.add(genre)
+
+    vocab = sorted(set(g.lower() for movie in raw_genres for g in movie))
+    word_idx = {g:i for i,g in enumerate(vocab)}
+
+    tf_vectors = []
+
+    for movie in raw_genres:
+        counter = Counter(movie)
+        vector = [0]*len(vocab)
+        for g, count in counter.items():
+            vector[word_idx[g]] = count
+        tf_vectors.append(vector)
+
+    return tf_vectors
+
+def IdfVectorizer(df: pd.DataFrame) -> list: # tính vector idf
+    raw_genres = df['genres'].to_list()
+
+    vocab = sorted(set(g.lower() for movie in raw_genres for g in movie))
+    idf_vector = [0]*len(vocab)
+    word_idx = {g:i for i,g in enumerate(vocab)}
+    for word in vocab:
+        freq = 0
+        for movie in raw_genres:
+            if word in set(movie):
+                freq += 1
+        idf_vector[word_idx[word]] = math.log((len(raw_genres) + 1)/(freq + 1)) + 1
     
-    word_set = sorted(list(word_set))
+    return idf_vector
+        
+
+def Tf_idfVectorizer(df: pd.DataFrame) -> list: # tính tf_idf vector cho tất cả phim
+    tf_vectors = np.array(TfVectorizer(df))
+    idf_vector = np.array(IdfVectorizer(df))
+
+    return (tf_vectors * idf_vector).tolist()
+    
 
 
-    tf_vector = []
-    for movie_genre in raw_genres:
-        vector = [0] * len(word_set)
-        current_movie = movie_genre
-        for genre in current_movie:
-            if genre in word_set:
-                index = word_set.index(genre)
-                vector[index] = 1 
-        tf_vector.append(vector)
 
-    return tf_vector
+    
+    
+
 
     
         
