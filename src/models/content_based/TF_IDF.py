@@ -40,6 +40,33 @@ def IdfVectorizer(df: pd.DataFrame) -> list:
         
 
 def Tf_idfVectorizer(df: pd.DataFrame) -> list:
-    tf_vectors = np.array(TfVectorizer(df))
-    idf_vector = np.array(IdfVectorizer(df))
-    return (tf_vectors * idf_vector).tolist()
+    docs, vocab, word_idx = build_vocab(df, col_name='soup')
+    
+    # TF
+    tf_vectors = []
+    for movie in docs:
+        counter = Counter(movie)
+        vector = [0] * len(vocab)
+        for g, count in counter.items():
+            vector[word_idx[g]] = count 
+        tf_vectors.append(vector)
+
+    # IDF 
+    idf_vector = [0] * len(vocab)
+    word_set = [set(movie) for movie in docs]
+    for word in vocab:
+        freq = 0
+        for movie in word_set:
+            if word in movie:
+                freq += 1
+
+        idf_vector[word_idx[word]] = math.log((len(docs) + 1) / (freq + 1)) + 1
+    
+    tf_vectors = np.array(tf_vectors)
+    idf_vector = np.array(idf_vector)
+    
+    tf_idf = tf_vectors * idf_vector
+    norms = np.linalg.norm(tf_idf, axis=1, keepdims=True)
+    norms[norms == 0] = 1e-10 
+
+    return tf_idf / norms
