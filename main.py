@@ -5,8 +5,7 @@ import pickle
 from src.data_loader import data_load
 from src.recommender.popular.popular import PopularRecommender
 from src.recommender.content_based.data_process import preprocess_data
-from src.recommender.content_based.TF_IDF import Tf_idfVectorizer
-from src.recommender.content_based.cosine_similarity import cosine_similarity
+
 
 def main():
     df = data_load('data/raw/movies.csv')
