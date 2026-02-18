@@ -2,14 +2,14 @@ import difflib
 import pandas as pd
 import numpy as np
 import pickle
-from src.data_loader import data_load
-from src.recommender.popular.popular import PopularRecommender
-from src.recommender.content_based.data_process import preprocess_data
+from data.load_data.data_loader import data_load_from_db
+from src.recommend_logic.popular.popular import PopularRecommender
+from src.recommend_logic.content_based.data_process import preprocess_data
 
 
 def main():
-    df = data_load('data/raw/movies.csv')
-
+    
+    df = data_load_from_db()
     # test content-based model
     df = preprocess_data(df)
     with open("src/models/content-based/similarity_matrix.pkl", "rb") as f:

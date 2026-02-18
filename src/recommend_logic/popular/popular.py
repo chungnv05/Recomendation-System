@@ -1,6 +1,12 @@
 import pandas as pd 
+from pathlib import Path
+import sys
+import pickle
 
+BASE_DIR = Path(__file__).resolve().parents[3]
+sys.path.append(str(BASE_DIR))
 
+from data.load_data.data_loader import data_load_from_db
 
 # Sử dụng công thức IMDB Formula là công thức tính Weighted Rating dùng để tránh bias cho phim có ít lượt vote nhưng điểm cao bất thường.
 # Công thức IMDB: 
@@ -27,10 +33,23 @@ class PopularRecommender:
             (qualified['vote_count']/(qualified['vote_count']+self.m))*qualified['vote_average']
             + (self.m/(qualified['vote_count']+self.m))*self.C
         )
+        # Làm tròn
+        qualified['WR_score'] = qualified['WR_score'].round(2)
         # 3. Sort
         qualified = qualified.sort_values(by='WR_score', ascending=False)
         # 4. Return top N
-        return qualified.head(top_n)
+        return qualified
+    
+# Tạo model
+def create_model():
+    df = data_load_from_db() 
+    popular = PopularRecommender(df)
+    top_movie = popular.top_popular(df)
+    
+    with open('src/models/popular/popular.pkl', 'wb') as f:
+        pickle.dump(top_movie, f)
+
+# create_model()
     
 
 
