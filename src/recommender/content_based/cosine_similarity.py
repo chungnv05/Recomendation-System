@@ -3,7 +3,7 @@ import numpy as np
 from pathlib import Path
 import sys
 
-BASE_DIR = Path(__file__).resolve().parent[3]
+BASE_DIR = Path(__file__).resolve().parents[3]
 sys.path.append(str(BASE_DIR))
 
 from TF_IDF import Tf_idfVectorizer
@@ -22,7 +22,7 @@ def cosine_similarity(X, Y = None):
     return similarity
 
 
-def train_model(X):
+def train_model():
     df = data_load('data/raw/movies.csv')
     df = preprocess_data(df)
     
@@ -31,6 +31,8 @@ def train_model(X):
     
     with open("src/models/content-based/similarity_matrix.pkl", "wb") as f:
         pickle.dump(similarity_matrix, f)
+        
+
     
     
     
