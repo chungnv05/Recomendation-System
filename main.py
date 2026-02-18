@@ -1,20 +1,20 @@
 import difflib
 import pandas as pd
 import numpy as np
-
+import pickle
 from src.data_loader import data_load
-from src.models.popular import PopularRecommender
-from src.models.content_based.data_process import preprocess_data
-from src.models.content_based.TF_IDF import Tf_idfVectorizer
-from src.models.content_based.cosine_similarity import cosine_similarity
+from src.recommender.popular.popular import PopularRecommender
+from src.recommender.content_based.data_process import preprocess_data
+from src.recommender.content_based.TF_IDF import Tf_idfVectorizer
+from src.recommender.content_based.cosine_similarity import cosine_similarity
 
 def main():
     df = data_load('data/raw/movies.csv')
 
     # test content-based model
     df = preprocess_data(df)
-    tf_idf = Tf_idfVectorizer(df)
-    similarity = cosine_similarity(tf_idf)
+    with open("src/models/content-based/similarity_matrix.pkl", "rb") as f:
+        similarity = pickle.load(f)
 
     while True:
         i = input("Nhấn 1 để tìm phim nhấn 2 để thoát: ")
